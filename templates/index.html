@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meower Groupchat Utils</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <h1>Meower Groupchat Utils</h1>
+        <p>
+            Works with the @gc bot
+        </p>
+
+        <h2> Instructions </h2>
+
+        <ol>
+            <li>
+                When you click on one of the links, it copies the groupchat join link to your clipboard.
+            </li>
+            <li>
+                When it opens Meower in a new tab, send the message that got copied to your clipboard.
+            </li>
+            <li>
+                You should now be in that groupchat! (If you cant, check if it still exists here a bit later)
+            </li>
+        </ol>
+
+
+        <h2> Public Groupchats </h2>
+
+        <ul>
+        {% for groupchat in messages %}
+            <li>
+                <button id={{groupchat['uuid']}}>{{groupchat['nickname']}}</button>
+            </li>
+        {% endfor %}
+        <ul>
+        <script src="index.js"></script>
+        <div id="footer">
+            Made with love and care by <a href="https://github.com/ShowierData9978/">ShowierData9978</a>  &copy; 2023 <br>
+            <a href="https://github.com/Meower-Community/GCUtils">View on GitHub</a>
+</body>
+</html>

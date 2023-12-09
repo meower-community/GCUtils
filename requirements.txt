@@ -1,0 +1,5 @@
+MeowerBot
+python-dotenv
+waitress
+jinja2
+pymongo

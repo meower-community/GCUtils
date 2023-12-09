@@ -1,0 +1,95 @@
+html, body {
+    color: white;
+    background-color: #303030;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+html {
+    zoom: 200%;
+}
+
+main {
+    margin: 8px;
+}
+
+p {
+    font-size: 2rem;
+    color: white;
+}
+
+h1 {
+    font-size: 4rem;
+    color: white;
+}
+
+h2 {
+    font-size: 3rem;
+    color: white;
+}
+
+ul {
+    font-size: 2rem;
+    color: white;
+    list-style: none; /* Remove default bullets */
+}
+
+
+ul li::before {
+    content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+    color: white;
+    font-weight: bold; /* If you want it to be bold */
+    display: inline-block; /* Needed to add space between the bullet and the text */
+    width: 1em; /* Also needed for space (tweak if needed) */
+    margin-left: -1em; /* Also needed for space (tweak if needed) */
+}
+
+ol {
+    font-size: 2rem;
+    color: white;
+}
+
+
+/* make the button not look like a button */
+button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+button:hover {
+    text-decoration: underline;
+}
+
+#footer {
+    text-align: center;
+    font-size: 1rem;
+    color: white;
+
+    margin: 8px;
+
+
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0
+}
+
+a {
+    color: white;
+    text-decoration: underline;
+}
+
+.sublist_1 {
+
+    list-style: upper-latin;
+    list-style-type: upper-latin;
+}
+
+.sublist_1 li::before {
+    content: ""
+}
