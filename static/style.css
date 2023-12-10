@@ -93,3 +93,17 @@ a {
 .sublist_1 li::before {
     content: ""
 }
+
+@media (max-width: 800px) {
+    html {
+        zoom: 100%;
+    }
+
+    * {
+        font-size: 50%;
+    }
+
+    li, #footer, #footer * {
+        font-size: 75%;
+    }
+}

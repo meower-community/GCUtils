@@ -1,6 +1,10 @@
 from typing import NoReturn, Optional, TypedDict, List, cast
 from pymongo import MongoClient
 
+from dotenv import load_dotenv
+from os import environ as env
+load_dotenv(override=True)
+
 
 class Settings(TypedDict):
     public: bool
@@ -27,7 +31,7 @@ class GroupChat(TypedDict):
 
 
 class Database:
-    db = MongoClient().gcutils
+    db = MongoClient(host=env["database_host"], port=int(env["database_port"])).gcutils
 
     def __new__(cls) -> NoReturn:
         raise Exception("Database is a singleton")
