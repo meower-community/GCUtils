@@ -1,5 +1,7 @@
-MeowerBot
-python-dotenv
-waitress
+MeowerBot~=3.3.2
+python-dotenv~=1.0.1
+waitress~=3.0.0
 jinja2
-pymongo
+pymongo~=4.7.2
+httpx~=0.25.2
+ujson~=5.10.0

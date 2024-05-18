@@ -1,5 +1,6 @@
 from typing import Literal, Tuple, Union
 from MeowerBot import Bot, cbids # type: ignore # noqa
+from MeowerBot.context import Post
 from MeowerBot.data.generic import UUID
 from MeowerBot.ext.help import Help
 from os import environ as env
@@ -16,7 +17,6 @@ load_dotenv(override=True)
 logging.basicConfig(level=logging.DEBUG)
 
 bot = Bot(prefix="@gc ")
-bridges = {}
 
 
 @bot.command(name="join", args=1)
@@ -40,18 +40,25 @@ async def join(ctx, gc_id: str):
 
     groupchat = Database.get_groupchat(gc_id)
     if groupchat is None:
-        return await ctx.send_msg("That Group Chat does not exist")
+        return await ctx.send_msg("That Group Chat does not exist, or is private")
 
     if not groupchat["settings"]["public"]:
-        return await ctx.send_msg("That Group Chat is private")
+        return await ctx.send_msg("That Group Chat does not exist, or is private")
 
     if ctx.message.user.username in groupchat["bans"]:
         return await ctx.send_msg("You are banned from that Group Chat")
 
 
     _gc = await bot.api.chats.add_user(UUID(gc_id), ctx.message.user.username)
-    if _gc is None:
-        return await ctx.send_msg("The Group Chat that you tried to join is full")
+    if _gc[1] != 200:
+        await ctx.send_msg("Hold on... Creating a new group chat to fit you")
+        _gc = await Database.move_gcs(bot, gc_id)
+        if _gc is None:
+            return await ctx.send_msg("Could not create a new group chat")
+
+        await bot.api.chats.add_user(UUID(_gc["_id"]), ctx.message.user.username)
+        gc_id = _gc["_id"] + " (moved) "
+        push()
 
     await ctx.send_msg(f"Successfully added you to {gc.nickname} ({gc_id})")
 
@@ -65,13 +72,10 @@ def _update(args: Tuple[arguments, ...]):
     ret = {}
     for i in args:
         if i == "--public":
-            setting = "public"
+            ret["public"] = True
         elif i == "--shown_nickname":
             setting = "shown_nickname"
         else:
-            if i in ["True", "False"]:
-                i = i == "True"
-
             ret[setting] = i
 
     return ret
@@ -82,7 +86,7 @@ async def setup(ctx, *args: arguments):
     """Sets up a group chat for the moderation and joining system
 
     Options:
-        --public <bool>: Whether the group chat should be public
+        --public: Make the GC public
         --shown_nickname <nickname> The nickname that should be shown in the group chat
     """
     gc = await ctx.message.chat.fetch()
@@ -101,7 +105,7 @@ async def ban(ctx, user):
     if gc is None:
         return await ctx.send_msg("You need to register your group chat first!")
 
-    if ctx.message.user.username != gc["data"]["owner"]:
+    if ctx.message.user.username != gc["owner"]:
         return await ctx.send_msg("You must be the gc owner to use this command!")
 
     gc["bans"].append(user)
@@ -114,7 +118,7 @@ async def unban(ctx, user):
     if gc is None:
         return await ctx.send_msg("You need to register your group chat first!")
 
-    if ctx.message.user.username != gc["data"]["owner"]:
+    if ctx.message.user.username != gc["owner"]:
         return await ctx.send_msg("You must be the gc owner to use this command!")
 
     gc["bans"].remove(user)
@@ -147,12 +151,29 @@ bot.command("update")(edit)
 async def login(token):
     print("ready!")
 
+@bot.listen(cbids.message)
+async def on_message(msg: Post):
+    if msg.user.username == bot.username:
+        return
+    if msg.data.startswith("@gc"):
+        return
+
+    gc = Database.get_groupchat(msg.chat.id)
+    if gc is None:
+        return
+
+    coros = []
+    for gc_id in gc["bridges"]:
+        coros.append(bot.api.send_post(gc_id, f"{msg.user.username}: {msg.data}"))
+    await asyncio.gather(*coros)
+
+def push():
+    get("http://localhost:2400/rerender")
 
 async def push_changes():
     while True:
         await asyncio.sleep(60)
-        get("http://localhost:2400/rerender")
-
+        push()
 
 async def main():
     t = asyncio.create_task(push_changes()) # type: ignore # noqa

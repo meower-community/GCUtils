@@ -7,7 +7,7 @@ html, body {
 }
 
 html {
-    zoom: 200%;
+    zoom: 100%;
 }
 
 main {
@@ -95,10 +95,6 @@ a {
 }
 
 @media (max-width: 800px) {
-    html {
-        zoom: 100%;
-    }
-
     * {
         font-size: 50%;
     }

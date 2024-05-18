@@ -51,10 +51,10 @@ def rerender():
     return ""
 
 
-@Bottle.route("/api/chats") # type: ignore
+@Bottle.route("/api/chats")  # type: ignore
 def api_chats():
     bottle.response.content_type = 'application/json; charset=UTF8'
-    return json.dumps(messages) # type: ignore
+    return json.dumps(messages)  # type: ignore
 
 
 @Bottle.route("/") # type: ignore
@@ -67,6 +67,7 @@ def web():
 @Bottle.route("/<path:path>") # type: ignore
 def index_js(path):
     return bottle.static_file(path, root="static")
+
 
 if __name__ == "__main__":
     run_Bottle()
